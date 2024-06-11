@@ -11,6 +11,7 @@ Deep learning model constructed using the same idea of yolo but for Risiko! obje
 
 # How to use
 - The file run.py contains the code to train the model and also to test it
-- The two yaml files contains the two definition of the model investigated: BranchyYOLO and AblatedYOLOv9-C
+- The two yaml files contains the two definition of the model investigated: BranchyYOLO and AblatedYOLOv9-C. The other one contains the definition of hyperparamaters used during training
+- The file detection can be used to detect the objects in some images
 - We don't include our training dataset because it was too big
 
