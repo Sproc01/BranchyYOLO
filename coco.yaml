@@ -1,0 +1,19 @@
+base_path: /content/drive/MyDrive/Deep learning/
+names:
+  0: blue_army
+  1: red_army
+  2: yellow_army
+  3: purple_army
+  4: black_army
+  5: green_army
+  6: blue_flag
+  7: red_flag
+  8: yellow_flag
+  9: purple_flag
+  10: black_flag
+  11: green_flag
+nc: 12
+path: /content/
+test: real_images/images
+train: train1.txt
+val: val1.txt

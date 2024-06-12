@@ -1,34 +1,45 @@
 # Command line instructions needed
-# !git clone 'https://github.com/WongKinYiu/yolov9.git' done
-##### needed because there is an error in the repo
-# !sed -i 's/opt.min_items/min_items/' yolov9/val.py done
-# !sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py done
+##### Clone the repo #####
+# !git clone 'https://github.com/WongKinYiu/yolov9.git'
 
-# !pip install -r yolov9/requirements.txt -q done
+
+##### needed because there is an error in the repo #####
+# !sed -i 's/opt.min_items/min_items/' yolov9/val.py
+# !sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py
+
+##### Install the requirements #####
+# !pip install -r yolov9/requirements.txt -q
 
 import sys
-sys.path.append('../yolov9')
 import os
 import yaml
 import random
 import torch
-from utils.general import check_dataset
+
+sys.path.append('../yolov9')
+
+# if you are using BranchyYOLO
 from train import main as train
 from val import main as test
 
+# # if you are using ablated YOLO
+# from train_dual import main as train
+# from val_dual import main as test
+
 # Useful paths
-save_dir = 'dir_train/'
-img_path = 'synthetic_images/images/'
-labels_path = 'synthetic_images/labels/'
-real_images_path = 'real_images/images/'
-real_labels_path = 'real_images/labels/'
+save_dir = 'dir_train/' # path to the folder where the result of the training will be saved
+local_path = '' # path to folder with all images
+img_path = local_path + 'synthetic_images/images/'
+labels_path = local_path + 'synthetic_images/labels/'
+real_images_path = local_path + 'real_images/images/'
+real_labels_path = local_path + 'real_images/labels/'
 
 ###### classes ####
 
 class Opt:
     def __init__(self, *args, **kwargs):
         self.project = save_dir+'runs/'
-        self.name = 'unknown_task'
+        self.name = 'trainingModel'
         self.weights = ''
         self.data = 'coco.yaml' # train/val/test data saved into yaml
         self.exist_ok = False
@@ -77,31 +88,24 @@ class TrainOpt(Opt):
 
 
 class TestOpt(Opt):
-    def __init__(self, only_detect=False, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__()
         self.name = 'test'
-
-        if only_detect:
-            self.name = 'test_detect'
-            self.source = check_dataset(self.data)['test']
-            self.imgsz = (self.imgsz, self.imgsz)   # used in detect
-        else:
-            self.conf_thres = 0.001
-            self.save_hybrid = False
-            self.task = self.name
-            self.min_items = 0
-            del self.nosave
+        self.conf_thres = 0.001
+        self.save_hybrid = False
+        self.task = self.name
+        self.min_items = 0
+        del self.nosave
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
 
+####### Functions to define the datasets #######
 
-####### functions #######
-
-
-def defineDatasetSynthetic():
-    # remove old cache
+def defineDatasetSynthetic(): 
+    # dataset with only synthetic images
+    # remove old cache if there is one
     try:
         os.remove('train.cache')
         os.remove('val.cache')
@@ -110,20 +114,13 @@ def defineDatasetSynthetic():
         pass
     print('Deleted old cache correctly')
 
-
+    # read how many images are in the folder and shuffle them
     imgs = [os.path.join(img_path, name) for name in os.listdir(img_path) if os.path.isfile(os.path.join(img_path, name))]
     random.shuffle(imgs)
     img_n = len(imgs)
-    if img_n < 10000: # max in order to check if all images are present
-        for i in range(10000):
-            s = os.path.join(img_path, str(i).zfill(6)+'.jpg')
-            if s not in imgs:
-                print(s)
-
 
     trainleng = int(0.7 * img_n)
     valLength = int(0.15 * img_n)
-
 
     # files used for training/validating/testing
     with open('train.txt', 'w') as f:
@@ -135,7 +132,7 @@ def defineDatasetSynthetic():
 
     # update coco file
     data = {}
-    data['path'] = '/home/sprocatti1/yoloProject/'
+    data['path'] = local_path
     data['train']= 'train.txt'
     data['val']= 'val.txt'
     data['test'] = 'test.txt'
@@ -161,6 +158,7 @@ def defineDatasetSynthetic():
 
 
 def defineDatasetSyntheticReal():
+    # dataset with synthetic images and real images
     # remove old cache
     try:
         os.remove('train.cache')
@@ -170,12 +168,11 @@ def defineDatasetSyntheticReal():
         pass
     print('Deleted old cache correctly')
 
-
+    # read how many images are in the folder and shuffle them
     synthetic_imgs = [os.path.join(img_path, name) for name in os.listdir(img_path) if os.path.isfile(os.path.join(img_path, name))]
     real_imgs = [os.path.join(real_images_path, name) for name in os.listdir(real_images_path) if os.path.isfile(os.path.join(real_images_path, name))]
     random.shuffle(synthetic_imgs)
     random.shuffle(real_imgs)
-
 
     img_synthetic_n = len(synthetic_imgs)
     img_real_n = len(real_imgs)
@@ -199,7 +196,7 @@ def defineDatasetSyntheticReal():
 
     # update coco file
     data = {}
-    data['path'] = '/home/sprocatti1/yoloProject/'
+    data['path'] = local_path
     data['train']= 'train2.txt'
     data['val']= 'val2.txt'
     data['test'] = 'test2.txt'
@@ -225,7 +222,7 @@ def defineDatasetSyntheticReal():
 
 
 def main():
-    ###### FIRST PART ############
+########### FIRST PART #################
 
     # Train onto synthetic images
     train_opt = TrainOpt()
@@ -233,7 +230,7 @@ def main():
     defineDatasetSynthetic()
 
     try:
-        train_res = train(train_opt)
+        train(train_opt)
     except Exception as error:
         torch.cuda.empty_cache()
         print("An error occurred:", type(error).__name__, "-", error)
@@ -255,21 +252,22 @@ def main():
     test(test_opt)
 
 
-    ###### SECOND PART ############
-
+########### SECOND PART #################
+    # If both are run sequentially this training creates train2 folder in dir_train/runs
+    # and the weights are saved in train2/weights otherwise change the path in the test_opt
     # Training onto real and synthetic images
     train_opt = TrainOpt()
 
     defineDatasetSyntheticReal()
 
     try:
-        train_res = train(train_opt)
+        train(train_opt)
     except Exception as error:
         torch.cuda.empty_cache()
         print("An error occurred:", type(error).__name__, "-", error)
 
     # Test onto synthetic images
-    test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt') # TODO change
+    test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
     test(test_opt)
 
     # update coco to test onto real images
@@ -280,7 +278,7 @@ def main():
         yaml.dump(data, f)
         
     # Test onto real images
-    test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt') # TODO change
+    test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
     test(test_opt)
 
 if __name__=='__main__':

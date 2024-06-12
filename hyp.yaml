@@ -8,11 +8,11 @@ warmup_bias_lr: 0.1  # warmup initial bias lr
 box: 7.5  # box loss gain   # it is 0.05 in ultralytics/yolov5
 cls: 0.5  # cls loss gain   # it is 0.5 or 0.3 in ultralytics/yolov5
 cls_pw: 1.0  # cls BCELoss positive_weight
-obj: 0.7  # obj loss gain (scale with pixels)   # it is 1.0 in ultralytics/yolov5
+obj: 0.7  # obj loss gain (scale with pixels)
 obj_pw: 1.0  # obj BCELoss positive_weight
 dfl: 1.5  # dfl loss gain   # not present in ultralytics/yolov5            
 iou_t: 0.20  # IoU training threshold
-anchor_t: 5.0  # anchor-multiple threshold  # it is 4.0 in ultralytics/yolov5
+anchor_t: 5.0  # anchor-multiple threshold
 # anchors: 3  # anchors per output layer (0 to ignore)
 # augmentation (can be set to 0 tu use only albumentation, otherwise done in addition): 
 fl_gamma: 0.0  # focal loss gamma (efficientDet default gamma=1.5)
@@ -21,11 +21,11 @@ hsv_s: 0.7  # image HSV-Saturation augmentation (fraction)
 hsv_v: 0.4  # image HSV-Value augmentation (fraction)
 degrees: 0.0  # image rotation (+/- deg)
 translate: 0.1  # image translation (+/- fraction)
-scale: 0.9  # image scale (+/- gain)    # it is 0.5 in ultralytics/yolov5
+scale: 0.9  # image scale (+/- gain)
 shear: 0.0  # image shear (+/- deg)
 perspective: 0.0  # image perspective (+/- fraction), range 0-0.001
 flipud: 0.0  # image flip up-down (probability)
 fliplr: 0.5  # image flip left-right (probability)
 mosaic: 1.0  # image mosaic (probability)
-mixup: 0.15  # image mixup (probability)    # it is 0.0 or 0.1 in ultralytics/yolov5
-copy_paste: 0.3  # segment copy-paste (probability) # it is 0.0 or 0.1 in ultralytics/yolov5
+mixup: 0.15  # image mixup (probability)
+copy_paste: 0.3  # segment copy-paste (probability)
