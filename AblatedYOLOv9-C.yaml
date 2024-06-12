@@ -13,7 +13,7 @@ anchors: 3
 # backbone
 backbone:
   [
-   [-1, 1, Silence, []],  
+   [-1, 1, Silence, []],  # 0
    
    # conv down
    [-1, 1, Conv, [64, 3, 2]],  # 1

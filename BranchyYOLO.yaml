@@ -15,7 +15,7 @@ backbone:
   [
     [-1, 1, Silence, []],  # 0 640x640x3
 
-    # first branch
+    # left branch
     [0, 1, Conv, [64, 3, 2]], # 1 320x320x64
 
     [-1, 1, nn.AvgPool2d, [3, 2, 0, True]], # 2 160x160x64
@@ -28,7 +28,7 @@ backbone:
 
     [-1, 1, nn.AvgPool2d, [3, 2, 0, True]], # 6 20x20x512
 
-    # second branch
+    # right branch
     [0, 1, Conv, [128, 7, 4]], # 7 160x160x128
 
     [-1, 1, nn.MaxPool2d, [3, 2, 0, 1, False, True]], # 8 80x80x256

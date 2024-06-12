@@ -1,20 +1,27 @@
 # BranchyYOLO
-Deep learning model constructed using the same idea of yolo but for Risiko! object detection. In this repository there is also an ablated version of YOLOv9-C that it has been studied during the devolpment of BranchyYOLO. 
+A Deep Learning model built using the same idea as YOLO, but with a 2-branch topology.
+This is its PyTorch implementation for Risiko! table game's pieces object detection.
+
+In this repository there is also an ablated version of YOLOv9-C which has been studied during the development of BranchyYOLO.
+
+For more information read the [report](Report.pdf).
 
 # Requirements
-- Pytorch
-- Yolov9-c official implementation: [GitHub Repository of YOLOv9-c](https://github.com/WongKinYiu/yolov9.git)
-- After downloading it do this following command in the terminal in the folder that contains the repository:
-  - sed -i 's/opt.min_items/min_items/' yolov9/val.py
-  - sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py
-- Install the yolov9 requirments: pip install -r yolov9/requirements.txt
+- PyTorch
+- [YOLOv9-C official implementation](https://github.com/WongKinYiu/yolov9.git): `git clone 'https://github.com/WongKinYiu/yolov9.git'`
+  After downloading it run the following commands:
+    - `sed -i 's/opt.min_items/min_items/' yolov9/val.py`
+    - `sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py`
+- Install the yolov9 requirements: `pip install -r yolov9/requirements.txt`
 
-# How to use
-- The file run.py contains the code to train the model and also to test it
-- The file BranchyYOLO.yaml contains the definition of the model
-- The file AblatedYOLOv9-C.yaml contains the definition of the ablated version of YOLOv9-C
-- The file hyp.yaml contains the definition of some parameters used in the training phase
-- The file coco.yaml contains the definition of the dataset used for training and testing
-- The file detection can be used to detect the objects in some images
-- We don't include our training dataset because it was too big
+# Files explanation
+We don't include our training dataset because it is too big
+
+- The file `run.py` contains the code to train the model and also to test it
+  > **Important**: modify `run.py` imports according to the model being trained: use `*_dual` files if and only if the ablated model is going to be used (since it has the auxiliary part).
+- The file `BranchyYOLO.yaml` contains the definition of *BranchyYOLO* model; it will be imported by `models.yolo.parse_model`
+- The file `AblatedYOLOv9-C.yaml` contains the definition of the ablated version of YOLOv9-C
+- The file `hyp.yaml` contains the definition of some hyperparameters used during the training phase
+- The file `coco.yaml` contains the definition of the dataset used for training, validation and testing
+- The file `Detection.ipynb` can be used to perform object detection in images
 

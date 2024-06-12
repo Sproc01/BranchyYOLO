@@ -1,14 +1,14 @@
 # Command line instructions needed
-##### Clone the repo #####
-# !git clone 'https://github.com/WongKinYiu/yolov9.git'
+##### Clone YOLOv9 repo #####
+# `git clone 'https://github.com/WongKinYiu/yolov9.git'`
 
 
-##### needed because there is an error in the repo #####
-# !sed -i 's/opt.min_items/min_items/' yolov9/val.py
-# !sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py
+##### modify files (needed because there is an error in the YOLOv9 repo (https://github.com/WongKinYiu/yolov9/pull/412)) #####
+# `sed -i 's/opt.min_items/min_items/' yolov9/val.py`
+# `sed -i 's/opt.min_items/min_items/' yolov9/val_dual.py`
 
-##### Install the requirements #####
-# !pip install -r yolov9/requirements.txt -q
+##### Install requirements #####
+# `pip install -r yolov9/requirements.txt -q`
 
 import sys
 import os
@@ -16,13 +16,14 @@ import yaml
 import random
 import torch
 
-sys.path.append('../yolov9')
+sys.path.append('./yolov9')
 
-# if you are using BranchyYOLO
+
+### IMPORT RELEVANT FILES!
+# if using BranchyYOLO:
 from train import main as train
 from val import main as test
-
-# # if you are using ablated YOLO
+# if using ablated YOLO:
 # from train_dual import main as train
 # from val_dual import main as test
 
@@ -34,7 +35,7 @@ labels_path = local_path + 'synthetic_images/labels/'
 real_images_path = local_path + 'real_images/images/'
 real_labels_path = local_path + 'real_images/labels/'
 
-###### classes ####
+###### Option classes ####
 
 class Opt:
     def __init__(self, *args, **kwargs):
@@ -61,26 +62,26 @@ class TrainOpt(Opt):
         self.evolve = False
         self.resume = False
         self.single_cls = False
-        self.noval = False           # validation after each epoch
+        self.noval = False              # validation after each epoch
         self.workers = 8
         self.freeze = [0]
         self.noplots = False
         self.seed = 0
-        self.optimizer = 'Adam'     
+        self.optimizer = 'Adam'
         self.cos_lr = False
         self.flat_cos_lr = False
         self.fixed_lr = False
         self.sync_bn = False
-        self.cache = 'ram'          # disk creates the npy for images, ram then the model goes out of cuda memory
-        self.close_mosaic = 20      # number of last epochs without using moasic
-        self.rect = False         
+        self.cache = 'ram'              # disk creates the npy for images, ram then the model goes out of cuda memory
+        self.close_mosaic = 20          # number of last epochs without using moasic
+        self.rect = False
         self.quad = False
         self.image_weights = False
         self.min_items = 0
         self.label_smoothing = 0.0
         self.patience = 50
         self.multi_scale = True
-        self.save_period = -1      # used only if nosave is False
+        self.save_period = -1           # used only if nosave is False
         self.hyp = 'hyp.yaml'
 
         for key, value in kwargs.items():
@@ -101,10 +102,11 @@ class TestOpt(Opt):
             setattr(self, key, value)
 
 
-####### Functions to define the datasets #######
+####### Functions to define datasets #######
 
 def defineDatasetSynthetic(): 
     # dataset with only synthetic images
+
     # remove old cache if there is one
     try:
         os.remove('train.cache')
@@ -119,16 +121,16 @@ def defineDatasetSynthetic():
     random.shuffle(imgs)
     img_n = len(imgs)
 
-    trainleng = int(0.7 * img_n)
-    valLength = int(0.15 * img_n)
+    train_len = int(0.7 * img_n)
+    val_len = int(0.15 * img_n)
 
     # files used for training/validating/testing
     with open('train.txt', 'w') as f:
-        f.write('\n'.join([str(imgs[i]) for i in range(0, trainleng)]))
+        f.write('\n'.join([str(imgs[i]) for i in range(0, train_len)]))
     with open('val.txt', 'w') as f:
-        f.write('\n'.join([str(imgs[i]) for i in range(trainleng, trainleng+valLength)]))
+        f.write('\n'.join([str(imgs[i]) for i in range(train_len, train_len+val_len)]))
     with open('test.txt', 'w') as f:
-        f.write('\n'.join([str(imgs[i]) for i in range(trainleng+valLength, img_n)]))
+        f.write('\n'.join([str(imgs[i]) for i in range(train_len+val_len, img_n)]))
 
     # update coco file
     data = {}
@@ -159,6 +161,7 @@ def defineDatasetSynthetic():
 
 def defineDatasetSyntheticReal():
     # dataset with synthetic images and real images
+
     # remove old cache
     try:
         os.remove('train.cache')
@@ -176,23 +179,23 @@ def defineDatasetSyntheticReal():
 
     img_synthetic_n = len(synthetic_imgs)
     img_real_n = len(real_imgs)
-    trainleng = int(0.7 * img_synthetic_n)
-    valLeng = int(0.15 * img_synthetic_n)
-    trainRealLen = int(0.7 * img_real_n)
+    train_len = int(0.7 * img_synthetic_n)
+    val_en = int(0.15 * img_synthetic_n)
+    train_real_len = int(0.7 * img_real_n)
 
-    # file used for training and validation
+    # files used for training and validation
     with open('train2.txt', 'w') as f:
-        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(0, trainleng)]))
+        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(0, train_len)]))
         f.write('\n')
-        f.write('\n'.join([str(real_imgs[i]) for i in range(0, trainRealLen)]))
+        f.write('\n'.join([str(real_imgs[i]) for i in range(0, train_real_len)]))
     with open('val2.txt', 'w') as f:
-        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(trainleng, trainleng + valLeng)]))
+        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(train_len, train_len + val_en)]))
 
     # test2.txt contains only synthetic images, while test3.txt contains only real images
     with open('test2.txt', 'w') as f:
-        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(trainleng + valLeng, img_synthetic_n)]))
+        f.write('\n'.join([str(synthetic_imgs[i]) for i in range(train_len + val_en, img_synthetic_n)]))
     with open('test3.txt', 'w') as f:
-        f.write('\n'.join([str(real_imgs[i]) for i in range(trainRealLen, img_real_n)]))
+        f.write('\n'.join([str(real_imgs[i]) for i in range(train_real_len, img_real_n)]))
 
     # update coco file
     data = {}
@@ -239,13 +242,13 @@ def main():
     test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt')
     test(test_opt)
 
-    # update coco to test onto real images
+    # Update coco to test onto real images
     with open('coco.yaml', 'r') as f:
         data = yaml.load(f, Loader=yaml.SafeLoader)
     data['test'] = 'real_images/images'
     with open('coco.yaml', 'w') as f:
         yaml.dump(data, f)
-    print('Modified correctly')
+    print('Dataset modified correctly')
 
     # Test onto real images
     test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt')
@@ -254,7 +257,8 @@ def main():
 
 ########### SECOND PART #################
     # If both are run sequentially this training creates train2 folder in dir_train/runs
-    # and the weights are saved in train2/weights otherwise change the path in the test_opt
+    # and the weights are saved in train2/weights, otherwise change the path in test_opt
+
     # Training onto real and synthetic images
     train_opt = TrainOpt()
 
@@ -270,19 +274,18 @@ def main():
     test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
     test(test_opt)
 
-    # update coco to test onto real images
+    # Update coco to test onto real images
     with open('coco.yaml', 'r') as f:
         data = yaml.load(f, Loader=yaml.SafeLoader)
     data['test'] = 'test3.txt'
     with open('coco.yaml', 'w') as f:
         yaml.dump(data, f)
-        
+    print('Dataset modified correctly')
+
     # Test onto real images
     test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
     test(test_opt)
 
+
 if __name__=='__main__':
     main()
-
-
-
