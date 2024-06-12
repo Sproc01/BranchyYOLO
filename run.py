@@ -72,7 +72,7 @@ class TrainOpt(Opt):
         self.flat_cos_lr = False
         self.fixed_lr = False
         self.sync_bn = False
-        self.cache = 'ram'              # disk creates the npy for images, ram then the model goes out of cuda memory
+        self.cache = 'ram'              # disk or ram 
         self.close_mosaic = 20          # number of last epochs without using moasic
         self.rect = False
         self.quad = False
