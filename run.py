@@ -237,10 +237,17 @@ def main():
     except Exception as error:
         torch.cuda.empty_cache()
         print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
     # Test onto synthetic images
     test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt')
-    test(test_opt)
+
+    try:
+        test(test_opt)
+    except Exception as error:
+        torch.cuda.empty_cache()
+        print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
     # Update coco to test onto real images
     with open('coco.yaml', 'r') as f:
@@ -252,7 +259,12 @@ def main():
 
     # Test onto real images
     test_opt = TestOpt(weights=Opt().project+'train/weights/best.pt')
-    test(test_opt)
+    try:
+        test(test_opt)
+    except Exception as error:
+        torch.cuda.empty_cache()
+        print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
 
 ########### SECOND PART #################
@@ -269,10 +281,16 @@ def main():
     except Exception as error:
         torch.cuda.empty_cache()
         print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
     # Test onto synthetic images
     test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
-    test(test_opt)
+    try:
+        test(test_opt)
+    except Exception as error:
+        torch.cuda.empty_cache()
+        print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
     # Update coco to test onto real images
     with open('coco.yaml', 'r') as f:
@@ -284,7 +302,12 @@ def main():
 
     # Test onto real images
     test_opt = TestOpt(weights=Opt().project+'train2/weights/best.pt')
-    test(test_opt)
+    try:
+        test(test_opt)
+    except Exception as error:
+        torch.cuda.empty_cache()
+        print("An error occurred:", type(error).__name__, "-", error)
+        sys.exit(1)
 
 
 if __name__=='__main__':
