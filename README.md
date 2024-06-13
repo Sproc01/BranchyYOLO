@@ -18,7 +18,7 @@ For more information read the [report](Report.pdf).
 We don't include our training dataset because it is too big
 
 - The file `run.py` contains the code to train the model and also to test it
-  > **Important**: modify `run.py` imports according to the model being trained: use `*_dual` files if and only if the ablated model is going to be used (since it has the auxiliary part).
+  > **Important**: modify `run.py` imports according to the model being trained: use `*_dual` files if and only if the ablated model is going to be used (since it has the DualDetect instead of Detect at the end).
 - The file `BranchyYOLO.yaml` contains the definition of *BranchyYOLO* model; it will be imported by `models.yolo.parse_model`
 - The file `AblatedYOLOv9-C.yaml` contains the definition of the ablated version of YOLOv9-C
 - The file `hyp.yaml` contains the definition of some hyperparameters used during the training phase
